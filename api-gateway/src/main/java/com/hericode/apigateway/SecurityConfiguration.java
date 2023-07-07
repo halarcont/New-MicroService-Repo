@@ -12,12 +12,31 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfiguration {
 
 //especifica que todas las solicitudes deben estar autenticadas utilizando el método authorizeExchange
-    @Bean
-    public SecurityWebFilterChain SecurityWebFilterChain(ServerHttpSecurity httpSecurity){
-        httpSecurity.authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())
-                .oauth2Login(Customizer.withDefaults());
-        httpSecurity.csrf().disable();
+//    @Bean
+//    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity){
+//        httpSecurity.authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())
+//                .oauth2Login(Customizer.withDefaults());
+//        httpSecurity.csrf().disable();
+//
+//        return httpSecurity.build();
+//    }
 
-        return httpSecurity.build();
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+                .authorizeExchange()
+                //ALLOWING REGISTER API FOR DIRECT ACCESS
+                //.pathMatchers("/user/api/v1/register").permitAll()
+                //ALL OTHER APIS ARE AUTHENTICATED
+                .anyExchange().authenticated()
+                .and()
+                .csrf().disable()
+                .oauth2Login()
+                .and()
+                .oauth2ResourceServer()
+                .jwt();
+        return http.build();
     }
+
+
 }
